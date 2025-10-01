@@ -1,0 +1,10 @@
+# Arquivos de ambiente virtual e cache do Python
+venv/
+__pycache__/
+
+# Arquivos de configuração de IDEs
+.vscode/
+.idea/
+
+# Arquivo de segredos (NUNCA deve ir para a imagem)
+.env

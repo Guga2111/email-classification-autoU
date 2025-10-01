@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisador de Produtividade de Emails</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Analisador de Produtividade de Emails</h1>
+        <p>Envie um arquivo de email (.txt ou .pdf) para classificá-lo como produtivo ou improdutivo e receber uma sugestão de resposta.</p>
+
+        <form id="upload-form">
+            <input type="file" id="email-file" accept=".txt,.pdf" required>
+            <button type="submit">Analisar Email</button>
+        </form>
+
+        <div id="result-container" class="hidden">
+            <h2>Resultado da Análise</h2>
+            <pre id="result-content"></pre> </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

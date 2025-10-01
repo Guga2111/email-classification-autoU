@@ -1,7 +1,13 @@
+# web server
 Flask
-Flask-Cors 
-PyPDF2
+Flask-Cors
+gunicorn
+
+# AI and processing
 nltk
 openai
+google-generativeai
+
+# read .env and files
+PyPDF2
 python-dotenv
-gunicorn
