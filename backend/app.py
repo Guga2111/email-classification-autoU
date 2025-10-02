@@ -99,23 +99,28 @@ def classify_and_generate_response_with_ai (email_text):
         return None
     
 @app.route('/classify', methods=['POST'])
-def classify_email_endpoint ():
-    if 'email_file' not in request.files or not request.files['email_file'].filename:
-        return jsonify({"error": "Nenhum arquivo enviado no campo 'email_file'"}), 400
-        
+def classify_email_endpoint ():        
     try:
-        file = request.files['email_file']
-        raw_text = read_text_from_file(file)
+        raw_text = None
 
-        if not raw_text.strip():
-            return jsonify({"error": "O arquivo está vazio ou o texto não pôde ser extraído"}), 400
+        if 'email_file' in request.files and request.files['email_file'].filename:
+            file = request.files['email_file']
+            raw_text = read_text_from_file(file)
+
+        elif request.is_json:
+            data = request.get_json()
+            if data and 'email_text' in data:
+                raw_text = data.get('email_text')
+
+        if not raw_text or not raw_text.strip():
+            return jsonify({"error": "Nenhum arquivo ou texto foi enviado, ou o conteúdo está vazio"}), 400
             
         ai_result = classify_and_generate_response_with_ai(raw_text)
 
         if not ai_result:
-            return jsonify({"error" : "Falha ao processar com IA"}), 502
+            return jsonify({"error" : "Falha ao processar com a IA. A resposta não foi um JSON válido."}), 502
             
-        return jsonify(ai_result) , 200
+        return jsonify(ai_result), 200
         
     except ValueError as ve:
         return jsonify({"error" : str(ve)}), 400
