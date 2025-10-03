@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { api } from "@/lib/api";
 
 interface AnalysisResult {
   classificacao: string;
@@ -87,42 +88,36 @@ const Index = () => {
     setIsAnalyzing(true);
     setResult(null);
 
-    let requestBody: FormData | string;
-    let requestHeaders: HeadersInit = {};
+    try {
+      let response;
 
-    if (isFileMode && selectedFile) {
+      if (isFileMode && selectedFile) {
         const formData = new FormData();
         formData.append('email_file', selectedFile);
-        requestBody = formData;
-    } else {
-        requestBody = JSON.stringify({ email_text: emailText });
-        requestHeaders['Content-Type'] = 'application/json';
-    }
-
-    try {
-      const response = await fetch('http://localhost:5001/classify', { 
-        method: 'POST',
-        headers: requestHeaders,
-        body: requestBody,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Erro ao processar a solicitação');
+        response = await api.post<AnalysisResult>('/classify', formData);
+      } else {
+        response = await api.post<AnalysisResult>('/classify', {
+          email_text: emailText,
+        });
       }
 
+      const data = response.data;
       setResult(data);
+
       toast({
         title: "Análise concluída",
         description: "O email foi analisado com sucesso",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao analisar:', error);
+      const errorMessage =
+        error.response?.data?.error ||
+        (error instanceof Error ? error.message : "Não foi possível conectar ao servidor");
+
       toast({
         variant: "destructive",
         title: "Erro na análise",
-        description: error instanceof Error ? error.message : "Não foi possível conectar ao servidor",
+        description: errorMessage,
       });
     } finally {
       setIsAnalyzing(false);
